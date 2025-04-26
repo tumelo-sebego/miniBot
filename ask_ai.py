@@ -1,23 +1,17 @@
-from transformers import pipeline
+from transformers import pipeline, set_seed
 
-# Load a tiny model for question-answering
-qa_pipeline = pipeline("question-answering", model="distilbert-base-uncased-distilled-squad")
+# Load a tiny GPT2 model
+generator = pipeline('text-generation', model='distilgpt2')  # DistilGPT2 = small, fast
 
-print("✅ AI Ready! Ask me anything (type 'exit' to quit)")
+set_seed(42)  # For consistent outputs (optional)
+
+print("✅ AI Ready! Talk to me (type 'exit' to quit)")
 
 while True:
-    question = input("\n❓ Your question: ")
-    if question.lower() == 'exit':
+    prompt = input("\n💬 You: ")
+    if prompt.lower() == 'exit':
         print("👋 Bye!")
         break
-    
-    context = """
-    Neil Armstrong was the first man to walk on the Moon in 1969. 
-    The Moon is Earth's only natural satellite. 
-    Water freezes at 0 degrees Celsius. 
-    The Eiffel Tower is located in Paris, France.
-    """
-    # Note: In real cases, you can load dynamic contexts too!
 
-    result = qa_pipeline(question=question, context=context)
-    print("🤖 Answer:", result['answer'])
+    output = generator(prompt, max_length=50, num_return_sequences=1)
+    print("🤖 AI:", output[0]['generated_text'])
